@@ -14,9 +14,25 @@ BOT_NAME = 'football'
 SPIDER_MODULES = ['football.spiders']
 NEWSPIDER_MODULE = 'football.spiders'
 
-DOWNLOAD_HANDLERS = {
-  's3': None,
+DOWNLOADER_MIDDLEWARES = {
+    'scrapyjs.SplashMiddleware': 725,
 }
+SPLASH_URL = 'http://localhost:8050/'
+DUPEFILTER_CLASS = 'scrapyjs.SplashAwareDupeFilter'
+HTTPCACHE_STORAGE = 'scrapyjs.SplashAwareFSCacheStorage'
+
+DOWNLOAD_DELAY = 5
+
+ITEM_PIPELINES = ['football.pipelines.FootballPipeline', ]
+#ITEM_PIPELINES = {
+#    'football.pipelines.FootballPipeline': 300,
+#}
+
+#MONGODB_SERVER = "localhost"
+#MONGODB_PORT = 27017
+#MONGODB_DB = "football"
+#MONGODB_COLLECTION = "epl"
+
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'football (+http://www.yourdomain.com)'
 
