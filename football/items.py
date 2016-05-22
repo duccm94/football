@@ -11,10 +11,11 @@ import scrapy
 class FootballItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
+    season = scrapy.Field()
     date = scrapy.Field()
     time = scrapy.Field()
     location = scrapy.Field()
     home = scrapy.Field()
     homescore = scrapy.Field()
-    awayscore = scrapy.Field()
     away = scrapy.Field()
+    awayscore = scrapy.Field()

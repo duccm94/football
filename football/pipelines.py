@@ -8,8 +8,6 @@
 import pymongo
 
 class FootballPipeline(object):
-    collection_name = 'epl'
-
     def __init__(self, mongo_uri, mongo_db):
         self.mongo_uri = mongo_uri
         self.mongo_db = mongo_db
@@ -29,5 +27,18 @@ class FootballPipeline(object):
         self.client.close()
 
     def process_item(self, item, spider):
-        self.db[self.collection_name].insert(dict(item))
+#        namelist = ['epl' + i.split('-')[0] for i in item['season']]
+#        name = namelist[0]
+        name = 'epl' + item['season'][0].replace('-','')
+        self.db[name].insert(dict(item))
         return item
+
+#    def process_item(self, item, spider):
+#        if spider.name == 'football':
+#            if '2015-2016' in item['season']:
+#                self.db['epl1516'].insert(dict(item))
+#            elif '2014-2015' in item['season']:
+#                self.db['epl1415'].insert(dict(item))
+#            else:
+#                self.db['epl1314'].insert(dict(item))
+#        return item

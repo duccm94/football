@@ -6,7 +6,9 @@ class FootballSpider(scrapy.Spider):
     name = "football"
     allowed_domains = ["premierleague.com"]
     start_urls = [
-        "http://www.premierleague.com/en-gb/matchday/results.html?paramComp_100=true&view=.dateSeason.html?paramComp_8=true",
+        "http://www.premierleague.com/content/premierleague/en-gb/matchday/results.html?paramClubId=ALL&paramComp_8=true&view=.dateSeason&paramSeasonId=2015",
+        "http://www.premierleague.com/content/premierleague/en-gb/matchday/results.html?paramClubId=ALL&paramComp_8=true&view=.dateSeason&paramSeasonId=2014",
+        "http://www.premierleague.com/content/premierleague/en-gb/matchday/results.html?paramClubId=ALL&paramComp_8=true&view=.dateSeason&paramSeasonId=2013",
     ]
 
     def start_requests(self):
@@ -19,19 +21,18 @@ class FootballSpider(scrapy.Spider):
                 })
 
     def parse(self, response):
+        #season = response.xpath('//select[@id="season"]/option[@selected="selected"]/text()').extract()
+        season = response.xpath('//div[@class="fixtures-container fixturelist"]/div/h2/text()').extract()
         for dates in response.xpath('//table[@class="contentTable"]/tbody'):
             date = dates.xpath('tr/th/text()').extract()
-            for sel in dates.xpath('''set:difference(.//tr,.//tr/th)'''):
+            for sel in dates.xpath('tr[position()>1]'):
                 item = FootballItem()
+                item['season'] = [i.split()[1] for i in season]
                 item['date'] = date
-                item['time'] = sel.xpath('td[@class="time"]/text()').extract()
-                item['time'] = [i.split()[0] for i in item['time']]
+                item['time'] = [i.split()[0] for i in sel.xpath('td[@class="time"]/text()').extract()]
                 item['location'] = sel.xpath('td[@class="location"]/a/text()').extract()
                 item['home'] = sel.xpath('td[@class="clubs rHome"]/a/text()').extract()
-                item['homescore'] = sel.xpath('td[@class="clubs score"]/a/text()').extract()
-                item['homescore'] = [i.split()[0] for i in item['homescore']]
-                item['awayscore'] = sel.xpath('td[@class="clubs score"]/a/text()').extract()
-                item['awayscore'] = [i.split()[2] for i in item['awayscore']]
+                item['homescore'] = [i.split()[0] for i in sel.xpath('td[@class="clubs score"]/a/text()').extract()]
+                item['awayscore'] = [i.split()[2] for i in sel.xpath('td[@class="clubs score"]/a/text()').extract()]
                 item['away'] = sel.xpath('td[@class="clubs rAway"]/a/text()').extract()
-                if item['time']:
-                    yield item
+                yield item
